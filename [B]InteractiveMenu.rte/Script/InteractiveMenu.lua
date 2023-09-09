@@ -144,7 +144,7 @@ function InteractiveMenu.InitializeTable(self, table)
                 if CBox or CButton then
                     local ChildPos = Vector(Child.PosX, Child.PosY)
                     local ChildWidth = Child.Width
-                    local ChildHeight = Child.Height 
+                    local ChildHeight = Child.Height
 
                     local NewPos = ParentPos + ChildPos
                     InteractiveBox[Child.Name] = Box(NewPos, ChildWidth, ChildHeight)
@@ -154,9 +154,14 @@ function InteractiveMenu.InitializeTable(self, table)
 					end
                 end
 
-                if Child.ControlType == "LABEL" then
+                if CLabel then
 					Child.PosX = Child.PosX + Parent.PosX * Resolution.X
                     Child.PosY = Child.PosY + Parent.PosY * Resolution.Y
+
+					--[[
+					local ChildPos = Vector(Child.PosX, Child.PosY)
+                    InteractiveBox[Child.Name] = Box(ChildPos, Child.Width, Child.Height)
+					]]
 
 					if SettingsMan.PrintDebugInfo then
 						print("Child: " .. Child.Name .. " Pos: {" .. Child.PosX .. ", " .. Child.PosY .. "}" .. " Size: {" .. Child.Width .. ", " .. Child.Height .. "}")
@@ -379,14 +384,12 @@ function InteractiveMenu.Button(N, X, Y, W, H, PALETTE, CLICKABLE, VISIBLE, TIP,
 	}
 end
 
-function InteractiveMenu.Label(N, X, Y, W, H, TXT, SMALL, VISIBLE, CALLBACK)
+function InteractiveMenu.Label(N, X, Y, TXT, SMALL, VISIBLE, CALLBACK)
 	return {
 		ControlType = "LABEL",
 		Name = N,
 		PosX = X,
 		PosY = Y,
-		Width = W,
-		Height = H,
 		Text = TXT,
 		isSmall = SMALL,
 		Visible = VISIBLE,
