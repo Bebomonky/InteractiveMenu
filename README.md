@@ -2,10 +2,13 @@
 A Framework for creating Menu's in Cortex Command
 
 KeyCodes can be found here
+
 https://github.com/cortex-command-community/Cortex-Command-Community-Project-Data/wiki/SDL-Keycode-and-Scancode-enum-values-in-Lua
+
 You can use the GUI Editor to design your Menu
 
 Only CollectionBox, Button, Label requires manual Labor
+
 https://github.com/cortex-command-community/Cortex-Command-Community-Project-GUI-Editor
 
 # How to include the Framework
