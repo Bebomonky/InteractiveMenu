@@ -164,7 +164,7 @@ function InteractiveMenu.InitializeTable(self, table)
 					]]
 
 					if SettingsMan.PrintDebugInfo then
-						print("Child: " .. Child.Name .. " Pos: {" .. Child.PosX .. ", " .. Child.PosY .. "}" .. " Size: {" .. Child.Width .. ", " .. Child.Height .. "}")
+						print("Child: " .. Child.Name .. " Pos: {" .. Child.PosX .. ", " .. Child.PosY .. "}")
 					end
                 end
             end
