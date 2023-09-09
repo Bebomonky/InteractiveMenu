@@ -174,10 +174,10 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 		if self.INCursor then
 			if self.INCursor:IsPlayerControlled() then
 				if actor.Health <= 0 then -- For some reason this is better than self:Dead()
-					InteractiveMenu.Destroy(self, mouse)
+					InteractiveMenu.Delete(self, mouse)
 				end
 			else
-				InteractiveMenu.Destroy(self, mouse)
+				InteractiveMenu.Delete(self, mouse)
 				self.Activity:SwitchToActor(actor, actor.Team, actor.Team)
 			end
 		end
