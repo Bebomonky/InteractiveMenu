@@ -1,4 +1,5 @@
-InteractiveMenu = InteractiveMenu or {}
+InteractiveMenu = {}
+InteractiveBox = {}
 
 --Create the Table i.e InteractiveMenu.Child
 function InteractiveMenu.InitializeCoreTable(Child)
@@ -106,7 +107,6 @@ end
 -- Table Information
 -----------------------------------------------------------------------------------------
 function InteractiveMenu.InitializeTable(self, table)
-    InteractiveBox = {}
 
 	if SettingsMan.PrintDebugInfo then
 		print("\n--------------------------------------------------------\nYour Resolution: {" .. FrameMan.PlayerScreenWidth .. ", " .. FrameMan.PlayerScreenHeight .. "}\n--------------------------------------------------------")
@@ -167,6 +167,14 @@ function InteractiveMenu.InitializeTable(self, table)
                 end
             end
         end
+    end
+end
+
+function InteractiveMenu.GetBoxName(Name)
+    if InteractiveBox[Name] then
+        return InteractiveBox[Name]
+    else
+        return error("expected box string &name" .. " '" .. Name .. "' (a nil value)")
     end
 end
 
@@ -271,6 +279,49 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 						PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color)
 					end
 					Panel = Box(topleftPos, width, height )
+
+                    if CButton then
+                        if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
+                            if Child.IsClickable then
+                                Child.Clicked = true
+                            end
+                            if Child.ToolTip then
+                                local ToolTipPos = Vector(0, 0)
+                                local Anchor = string.lower(Child.AnchorTip)
+                                if Anchor == "up" then
+                                    ToolTipPos = Vector(Panel.Width * 0.02, -9)
+                                elseif Anchor == "down" then
+                                    ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
+                                elseif Anchor == "left" then
+                                    ToolTipPos = Vector(-32, Panel.Height * 0.3)
+                                elseif Anchor == "right" then
+                                    ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
+                                end
+                                PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
+                            end
+                            if Child.Color2 then
+                                PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
+                            end
+                        else
+                            if Child.IsClickable then
+                                if Child.Clicked then
+                                    Child.Clicked = false
+                                end
+                            end
+                        end
+                        if Child.CallBack then
+                            Child.CallBack()
+                        end
+                        if Child.Clicked then
+                            local Clicked = self.INCursor:GetController():IsState(Controller.WEAPON_FIRE)
+                            if (Clicked and Child.OnClick) and not self.ConfirmClick then
+                                Child.OnClick()
+                                self.ConfirmClick = true
+                            elseif not Clicked then
+                                self.ConfirmClick = false
+                            end
+                        end
+                    end
 				end
 
 				--If we only need to Draw the Text we do this
@@ -283,46 +334,6 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 						PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), TexPos, Child.Text, Child.isSmall, 0)
 					end
 				end
-
-				if CButton then
-					if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
-						if Child.IsClickable then
-							Child.Clicked = true
-						end
-						if Child.ToolTip then
-							local ToolTipPos = Vector(0, 0)
-							local Anchor = string.lower(Child.AnchorTip)
-							if Anchor == "up" then
-								ToolTipPos = Vector(Panel.Width * 0.02, -9)
-							elseif Anchor == "down" then
-								ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
-							elseif Anchor == "left" then
-								ToolTipPos = Vector(-32, Panel.Height * 0.3)
-							elseif Anchor == "right" then
-								ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
-							end
-							PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
-						end
-					else
-						if Child.IsClickable then
-							if Child.Clicked then
-								Child.Clicked = false
-							end
-						end
-					end
-					if Child.CallBack then
-						Child.CallBack()
-					end
-					if Child.Clicked then
-						local Clicked = self.INCursor:GetController():IsState(Controller.WEAPON_FIRE)
-						if (Clicked and Child.OnClick) and not self.ConfirmClick then
-							Child.OnClick()
-							self.ConfirmClick = true
-						elseif not Clicked then
-							self.ConfirmClick = false
-						end
-					end
-				end
 			end
 		end
 	end
@@ -331,18 +342,21 @@ end
 --[[
 --? E L E M E N T S
 --? You only need to call these Elements once, it'll do some checks to prevent it from falling apart
-Name
-PosX
-PosY
-Width
-Height
-PALETTE -- Palette Index
-Text
-ToolTip
-isSmall
-Visible
-IsClickable
-Clicked
+Name - string
+PosX - number
+PosY - number
+Width - number
+Height - number
+PALETTE -- number (Palette Index)
+PALETTE2 -- Change Color on Hover [Only for Buttons]
+Text - string
+ToolTip - string
+DIRECT - string ("Up", "down", "left", "right" Anchoring your ToolTip)
+isSmall - bool
+Visible - bool
+IsClickable - bool
+Clicked - bool (Default to false) [Only for Buttons]
+
 Child - Subtables (Root is our main)
 --? F U N C T I O N S
 ONE_TIME_FUNCTION -- Happens once everytime
@@ -376,7 +390,7 @@ function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE)
 	}
 end
 
-function InteractiveMenu.Button(N, X, Y, W, H, PALETTE, CLICKABLE, VISIBLE, TIP, DIRECT, SMALL, ONE_TIME_FUNCTION, CALLBACK)
+function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VISIBLE, TIP, DIRECT, SMALL, ONE_TIME_FUNCTION, CALLBACK)
 	return {
 		ControlType = "BUTTON",
 		Name = N,
@@ -384,7 +398,8 @@ function InteractiveMenu.Button(N, X, Y, W, H, PALETTE, CLICKABLE, VISIBLE, TIP,
 		PosY = Y,
 		Width = W,
 		Height = H,
-		Color = PALETTE,
+		Color = PALETTE1,
+        Color2 = PALETTE2,
 		IsClickable = CLICKABLE,
 		Clicked = false,
 		Visible = VISIBLE,
