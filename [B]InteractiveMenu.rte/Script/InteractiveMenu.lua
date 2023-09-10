@@ -178,6 +178,19 @@ function InteractiveMenu.GetBoxName(Name)
     end
 end
 
+function InteractiveMenu.GetChildName(self, table, ChildName)
+	for _, Parent in ipairs(self[table]) do
+		if Parent.Child then
+			for _, Child in ipairs(Parent.Child) do
+                if Child.Name == ChildName then
+                    return Child
+                end
+            end
+        end
+    end
+    return error("expected child string &name" .. " '" .. tostring(ChildName) .. "' (a nil value)")
+end
+
 function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 	if self.INCursor and IsActor(self.INCursor) then
 		self.INCursor = ToActor(self.INCursor)
@@ -285,22 +298,24 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
                             if Child.IsClickable then
                                 Child.Clicked = true
                             end
-                            if Child.ToolTip then
-                                local ToolTipPos = Vector(0, 0)
-                                local Anchor = string.lower(Child.AnchorTip)
-                                if Anchor == "up" then
-                                    ToolTipPos = Vector(Panel.Width * 0.02, -9)
-                                elseif Anchor == "down" then
-                                    ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
-                                elseif Anchor == "left" then
-                                    ToolTipPos = Vector(-32, Panel.Height * 0.3)
-                                elseif Anchor == "right" then
-                                    ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
+                            if Child.Visible then
+                                if Child.ToolTip then
+                                    local ToolTipPos = Vector(0, 0)
+                                    local Anchor = string.lower(Child.AnchorTip)
+                                    if Anchor == "up" then
+                                        ToolTipPos = Vector(Panel.Width * 0.02, -9)
+                                    elseif Anchor == "down" then
+                                        ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
+                                    elseif Anchor == "left" then
+                                        ToolTipPos = Vector(-32, Panel.Height * 0.3)
+                                    elseif Anchor == "right" then
+                                        ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
+                                    end
+                                    PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
                                 end
-                                PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
-                            end
-                            if Child.Color2 then
-                                PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
+                                if Child.Color2 then
+                                    PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
+                                end
                             end
                         else
                             if Child.IsClickable then
