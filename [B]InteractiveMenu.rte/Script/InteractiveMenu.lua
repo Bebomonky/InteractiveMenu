@@ -106,9 +106,7 @@ end
 -- Table Information
 -----------------------------------------------------------------------------------------
 function InteractiveMenu.InitializeTable(self, table)
-	if not InteractiveBox then
-		InteractiveBox = {}
-	end
+    InteractiveBox = {}
 
 	if SettingsMan.PrintDebugInfo then
 		print("\n--------------------------------------------------------\nYour Resolution: {" .. FrameMan.PlayerScreenWidth .. ", " .. FrameMan.PlayerScreenHeight .. "}\n--------------------------------------------------------")
@@ -243,9 +241,9 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 	for _, Parent in ipairs(self[table]) do
 		local Frame = InteractiveBox[Parent.Name]
 
-		local PBox = Parent.ControlType == "COLLECTIONBOX"
+		local RootBox = Parent.ControlType == "COLLECTIONBOX"
 
-		if PBox then
+		if RootBox then
 			local cornerX, cornerY = Frame.Corner.X, Frame.Corner.Y
 			local width, height = Frame.Width, Frame.Height
 			local topleftPos = InteractiveMenu.ScreenPos(self, cornerX, cornerY)
@@ -257,6 +255,7 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 		end
 		if Parent.Child then
 			for _, Child in ipairs(Parent.Child) do
+
 				local Panel = InteractiveBox[Child.Name]
 				local CBox = Child.ControlType == "COLLECTIONBOX"
 				local CButton = Child.ControlType == "BUTTON"
@@ -361,6 +360,19 @@ function InteractiveMenu.Root(N, X, Y, W, H, PALETTE, VISIBLE, Table)
 		Color = PALETTE,
 		Visible = VISIBLE,
 		Child = Table,
+	}
+end
+
+function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE)
+	return {
+		ControlType = "COLLECTIONBOX",
+		Name = N,
+		PosX = X,
+		PosY = Y,
+		Width = W,
+		Height = H,
+		Color = PALETTE,
+		Visible = VISIBLE,
 	}
 end
 
