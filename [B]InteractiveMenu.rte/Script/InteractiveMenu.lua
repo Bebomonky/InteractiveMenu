@@ -9,7 +9,7 @@ end
 -----------------------------------------------------------------------------------------
 -- Cursor
 -----------------------------------------------------------------------------------------
-function InteractiveMenu.CreateMenuCursor(self, actor, mouse, PATH)
+function InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 	self.INCursor = CreateActor("[B]InteractiveMenu.rte/Interactive Static Actor")
 	self.INCursor.Pos = actor.Pos
 	self.INCursor.Team = actor.Team
@@ -31,7 +31,16 @@ function InteractiveMenu.CreateMenuCursor(self, actor, mouse, PATH)
 	self[mouse].GetsHitByMOs = false
 end
 
-function InteractiveMenu.UpdateMenuCursor(self, actor)
+function InteractiveMenu.CreateMenu(self, actor, mouse, PATH, table)
+
+    --Create the Cursor
+    InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
+
+    --Then check our table
+    InteractiveMenu.TableChecker(self, table)
+end
+
+function InteractiveMenu.UpdateCursor(self, actor)
 	self.INCursor.Pos = actor.Pos -- Never leave the actor that we are controlling!
 
 	if self.Mouse == nil then return end
@@ -191,7 +200,8 @@ function InteractiveMenu.GetChildName(self, table, ChildName)
     return error("expected child string &name" .. " '" .. tostring(ChildName) .. "' (a nil value)")
 end
 
-function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
+function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
+
 	if self.INCursor and IsActor(self.INCursor) then
 		self.INCursor = ToActor(self.INCursor)
 
@@ -207,12 +217,12 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 		end
 
 		if self[mouse] then
-			InteractiveMenu.UpdateMenuCursor(self, actor)
-			InteractiveMenu.UpdateMenu(self, actor, self[mouse], table)
+			InteractiveMenu.UpdateCursor(self, actor)
+			InteractiveMenu.PersistentMenu(self, actor, self[mouse], table)
 			InteractiveMenu.FreezeActor(self, actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
 		end
-	end
+    end
 end
 
 function InteractiveMenu.Destroy(self, mouse)
@@ -258,7 +268,7 @@ function InteractiveMenu.ScreenPos(self, PosX, PosY)
 	return Screen
 end
 
-function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
+function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 	for _, Parent in ipairs(self[table]) do
 		local Frame = InteractiveBox[Parent.Name]
 
