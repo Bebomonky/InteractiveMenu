@@ -161,8 +161,8 @@ function InteractiveMenu.InitializeTable(self, table)
                 end
 
                 if CLabel then
-					Child.PosX = Parent.PosX
-                    Child.PosY = Parent.PosY
+					Child.PosX = Parent.PosX * Resolution.X
+                    Child.PosY = Parent.PosY * Resolution.Y
 
 					--[[
 					local ChildPos = Vector(Child.PosX, Child.PosY)
