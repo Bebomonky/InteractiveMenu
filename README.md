@@ -46,36 +46,28 @@ function Create(self)
 end
 ```
 
+You must include these function in your `InteractiveMenu.yourtable.Update(self, actor)`
+
+This function must be at the very bottom of your .Update Function
+
 `PATH` is for your `CreateMOSRotating` Example: `"modname.rte/MyMouse"`
 
-`mouse` is for the name your `mouse` Example: `"MyMouseName"`, you can then call it by doing `self["MyMouseName"]`
+`mouse` is for the name your `mouse` Example: `"MyMouseName"`, you can then call it by doing `self["MyMouseName"]` (Except for Destroy and Delete)
 
 `menu` is for the name of your `menu`, this will be your table, you can then call it by doing `self["MyMenuTable"]`
 
-You must include these function in your `InteractiveMenu.yourtable.Update(self, actor)`
-
 
 ```bash
-InteractiveMenu.yourtable.Menu(self, actor, menu)
-```
-
-This function must be at the very bottom of your .Update Function
-```bash
-InteractiveMenu.PersistentMenu(self, actor, mouse, menu)
-```
-
-This function must be below your .Menu function
-```bash
-InteractiveMenu.CreateMenuCursor(self, actor, mouse, PATH)
+InteractiveMenu.UpdateMenu(self, actor, mouse, menu)
 ```
 
 You can include one of these functions to get out of the menu (Recommended to use `SwitchToActor` if you are going to have a CloseButton)
 
 ```bash
-InteractiveMenu.Destroy(self, mouse)
+InteractiveMenu.Destroy(self, "MyMouseName")
 ```
 ```bash
-InteractiveMenu.Delete(self, mouse)
+InteractiveMenu.Delete(self, "MyMouseName")
 ```
 
 Ensure that your menu is created once!
@@ -83,21 +75,31 @@ Example:
 
 ```
 InteractiveMenu.yourtable.Update = function(self, actor, device)
+	local mouse = "MyMouseName"
+	local menu = "MyMenuTable"
+	local PATH = "modname.rte/MOSRotating"
+
 		if device:GetNumberValue("MyNumberValue") == 1 then
 			device:SetNumberValue("MyNumberValue", 0)
-			InteractiveMenu.Engineer.Menu(self, actor, menu)
-			InteractiveMenu.CreateMenuCursor(self, actor, mouse, PATH)
+			--Your Menu code here
+
+			InteractiveMenu.CreateMenu(self, actor, mouse, PATH, menu)
 		end
-		InteractiveMenu.PersistentMenu(self, actor, mouse, menu)
+		InteractiveMenu.UpdateMenu(self, actor, mouse, menu)
 end
 ```
 or
 ```
 InteractiveMenu.yourtable.Update = function(self, actor)
+	local mouse = "MyMouseName"
+	local menu = "MyMenuTable"
+	local PATH = "modname.rte/MOSRotating"
+
 		if UInputMan:KeyPressed(Key.KeyCode) then
-			InteractiveMenu.Engineer.Menu(self, actor, menu)
-			InteractiveMenu.CreateMenuCursor(self, actor, mouse, PATH)
+			--Your Menu code here
+
+			InteractiveMenu.CreateMenu(self, actor, mouse, PATH, menu)
 		end
-		InteractiveMenu.PersistentMenu(self, actor, mouse, menu)
+		InteractiveMenu.UpdateMenu(self, actor, mouse, menu)
 end
 ```
