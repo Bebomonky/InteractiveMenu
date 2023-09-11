@@ -174,7 +174,7 @@ function InteractiveMenu.GetBoxName(Name)
     if InteractiveBox[Name] then
         return InteractiveBox[Name]
     else
-        return error("expected box string &name" .. " '" .. Name .. "' (a nil value)")
+        return error("expected box string &name" .. " '" .. tostring(Name) .. "' (a nil value)")
     end
 end
 
