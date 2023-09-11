@@ -161,14 +161,6 @@ function InteractiveMenu.InitializeTable(self, table)
                 end
 
                 if CLabel then
-					Child.PosX = Child.PosX + Parent.PosX * Resolution.X
-                    Child.PosY = Child.PosY + Parent.PosY * Resolution.Y
-
-					--[[
-					local ChildPos = Vector(Child.PosX, Child.PosY)
-                    InteractiveBox[Child.Name] = Box(ChildPos, Child.Width, Child.Height)
-					]]
-
 					if SettingsMan.PrintDebugInfo then
 						print("Child: " .. Child.Name .. " Pos: {" .. Child.PosX .. ", " .. Child.PosY .. "}")
 					end
