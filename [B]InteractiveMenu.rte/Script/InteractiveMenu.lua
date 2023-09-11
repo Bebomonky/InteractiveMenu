@@ -290,15 +290,17 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 					local bottomRightPos = topleftPos + Vector(width - 4.5, height - 4.5)
 					if Child.Visible then
 						PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color)
-					end
-					Panel = Box(topleftPos, width, height )
+                        Panel = Box(topleftPos, width, height ) --! Reverse this if it causes an issue!
+                    else
+                        Panel = nil
+                    end
 
                     if CButton then
-                        if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
-                            if Child.IsClickable then
-                                Child.Clicked = true
-                            end
-                            if Child.Visible then
+                        if Child.Visible then
+                            if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
+                                if Child.IsClickable then
+                                    Child.Clicked = true
+                                end
                                 if Child.ToolTip then
                                     local ToolTipPos = Vector(0, 0)
                                     local Anchor = string.lower(Child.AnchorTip)
@@ -316,24 +318,24 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
                                 if Child.Color2 then
                                     PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
                                 end
-                            end
-                        else
-                            if Child.IsClickable then
-                                if Child.Clicked then
-                                    Child.Clicked = false
+                            else
+                                if Child.IsClickable then
+                                    if Child.Clicked then
+                                        Child.Clicked = false
+                                    end
                                 end
                             end
-                        end
-                        if Child.CallBack then
-                            Child.CallBack()
-                        end
-                        if Child.Clicked then
-                            local Clicked = self.INCursor:GetController():IsState(Controller.WEAPON_FIRE)
-                            if (Clicked and Child.OnClick) and not self.ConfirmClick then
-                                Child.OnClick()
-                                self.ConfirmClick = true
-                            elseif not Clicked then
-                                self.ConfirmClick = false
+                            if Child.CallBack then
+                                Child.CallBack()
+                            end
+                            if Child.Clicked then
+                                local Clicked = self.INCursor:GetController():IsState(Controller.WEAPON_FIRE)
+                                if (Clicked and Child.OnClick) and not self.ConfirmClick then
+                                    Child.OnClick()
+                                    self.ConfirmClick = true
+                                elseif not Clicked then
+                                    self.ConfirmClick = false
+                                end
                             end
                         end
                     end
