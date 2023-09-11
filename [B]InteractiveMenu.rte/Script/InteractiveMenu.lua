@@ -1,5 +1,4 @@
 InteractiveMenu = {}
-InteractiveBox = {}
 
 --Create the Table i.e InteractiveMenu.Child
 function InteractiveMenu.InitializeCoreTable(Child)
@@ -116,7 +115,7 @@ end
 -- Table Information
 -----------------------------------------------------------------------------------------
 function InteractiveMenu.InitializeTable(self, table)
-
+    InteractiveBox = {}
 	if SettingsMan.PrintDebugInfo then
 		print("\n--------------------------------------------------------\nYour Resolution: {" .. FrameMan.PlayerScreenWidth .. ", " .. FrameMan.PlayerScreenHeight .. "}\n--------------------------------------------------------")
 	end
@@ -162,8 +161,8 @@ function InteractiveMenu.InitializeTable(self, table)
                 end
 
                 if CLabel then
-					Child.PosX = Child.PosX + Parent.PosX * Resolution.X
-                    Child.PosY = Child.PosY + Parent.PosY * Resolution.Y
+					Child.PosX = Parent.PosX
+                    Child.PosY = Parent.PosY
 
 					--[[
 					local ChildPos = Vector(Child.PosX, Child.PosY)
