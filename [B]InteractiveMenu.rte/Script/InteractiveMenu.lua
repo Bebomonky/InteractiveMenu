@@ -85,7 +85,7 @@ end
 
 function InteractiveMenu.DrawMenuCursor(self, actor, mouse)
 	if self.Mouse == nil then return end
-	mouse.Pos = self.Mouse + Vector(5, 12)
+	mouse.Pos = self.Mouse + Vector(5, 10)
 	PrimitiveMan:DrawBitmapPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), mouse.Pos, mouse, 0, 0)
 end
 
@@ -298,7 +298,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 
                     if CButton then
                         if Child.Visible then
-                            if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
+                            if Panel:IsWithinBox(mouse.Pos - Vector(0,1)) then
                                 Child.OnHover = true
                                 if Child.IsClickable then
                                     Child.Clicked = true
