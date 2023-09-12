@@ -21,8 +21,8 @@ function InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 
 	self.Mouse = self.INCursor.Pos
 	self.Mid = self.INCursor.Pos
-	self.ResX2 = FrameMan.PlayerScreenWidth / 2
-	self.ResY2 = FrameMan.PlayerScreenHeight / 2
+	self.ResX2 = FrameMan.PlayerScreenWidth / 1.5
+	self.ResY2 = FrameMan.PlayerScreenHeight / 1.5
 
 	self[mouse] = CreateMOSRotating(PATH)
 	self[mouse].Pos = self.Mouse + Vector(4.5, 10)
