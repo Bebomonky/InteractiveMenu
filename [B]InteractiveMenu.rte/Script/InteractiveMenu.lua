@@ -299,6 +299,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
                     if CButton then
                         if Child.Visible then
                             if Panel:IsWithinBox(mouse.Pos - Vector(0.2,2.621)) then
+                                Child.OnHover = true
                                 if Child.IsClickable then
                                     Child.Clicked = true
                                 end
@@ -320,6 +321,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
                                     PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
                                 end
                             else
+                                Child.OnHover = false
                                 if Child.IsClickable then
                                     if Child.Clicked then
                                         Child.Clicked = false
@@ -408,7 +410,7 @@ function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE)
 	}
 end
 
-function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VISIBLE, TIP, DIRECT, SMALL, ONE_TIME_FUNCTION, CALLBACK)
+function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VISIBLE, TIP, DIRECT, SMALL, HOVER, ONE_TIME_FUNCTION, CALLBACK)
 	return {
 		ControlType = "BUTTON",
 		Name = N,
@@ -424,6 +426,7 @@ function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VI
 		ToolTip = TIP,
 		AnchorTip = DIRECT,
 		isSmall = SMALL,
+        OnHover = HOVER,
 		OnClick = ONE_TIME_FUNCTION,
 		CallBack = CALLBACK
 	}
