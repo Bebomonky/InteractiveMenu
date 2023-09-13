@@ -61,7 +61,7 @@ This function must be at the very bottom of your .Update Function
 InteractiveMenu.UpdateMenu(self, actor, mouse, menu)
 ```
 
-You can include one of these functions to get out of the menu (Recommended to use `SwitchToActor` if you are going to have a CloseButton)
+You can include one of these functions to get out of the menu (Recommended to use `InteractiveMenu.Delete()` if you are going to have a CloseButton)
 
 ```bash
 InteractiveMenu.Destroy(self, "MyMouseName")
