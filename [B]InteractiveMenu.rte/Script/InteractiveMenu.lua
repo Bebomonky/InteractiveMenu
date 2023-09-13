@@ -77,7 +77,7 @@ function InteractiveMenu.DrawMenuCursor(self, actor, mouse)
 	PrimitiveMan:DrawBitmapPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), mouse.Pos, mouse, 0, 0)
 end
 
-function InteractiveMenu.FreezeActor(self, actor)
+function InteractiveMenu.FreezeActor(actor)
 	local ControlState = {
 		Controller.MOVE_UP,
 		Controller.MOVE_DOWN,
