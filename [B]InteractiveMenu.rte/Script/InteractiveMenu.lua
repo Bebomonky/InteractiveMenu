@@ -9,18 +9,8 @@ end
 -- Cursor
 -----------------------------------------------------------------------------------------
 function InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
-	self.INCursor = CreateActor("[B]InteractiveMenu.rte/Interactive Static Actor")
-	self.INCursor.Pos = actor.Pos
-	self.INCursor.Team = actor.Team
-	
-	self.INCursor.IgnoresTeamHits = true
-	self.INCursor.HUDVisible = false
-
-	MovableMan:AddActor(self.INCursor)
-	ActivityMan:GetActivity():SwitchToActor(self.INCursor, actor.Team, actor.Team)
-
-	self.Mouse = self.INCursor.Pos
-	self.Mid = self.INCursor.Pos
+	self.Mouse = actor.Pos
+	self.Mid = actor.Pos
 	self.ResX2 = FrameMan.PlayerScreenWidth / 1.5
 	self.ResY2 = FrameMan.PlayerScreenHeight / 1.5
 
@@ -30,37 +20,35 @@ function InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 	self[mouse].GetsHitByMOs = false
 end
 
+-----------------------------------------------------------------------------------------
+-- Menu
+-----------------------------------------------------------------------------------------
 function InteractiveMenu.CreateMenu(self, actor, mouse, PATH, table)
+	InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 
-    --Create the Cursor
-    InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
-
-    --Then check our table
     InteractiveMenu.TableChecker(self, table)
 end
 
 function InteractiveMenu.UpdateCursor(self, actor)
-	self.INCursor.Pos = actor.Pos -- Never leave the actor that we are controlling!
-
 	if self.Mouse == nil then return end
 
 	--If User has Mouse then we mouse, if not we Xbox the 360
-	if self.INCursor:GetController():IsMouseControlled() == true then
-		self.Mouse = self.Mouse + UInputMan:GetMouseMovement(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player))
+	if actor:GetController():IsMouseControlled() == true then
+		self.Mouse = self.Mouse + UInputMan:GetMouseMovement(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team))
 	else
-		if self.INCursor:GetController():IsState(Controller.MOVE_LEFT) then
+		if actor:GetController():IsState(Controller.MOVE_LEFT) then
 			self.Mouse = self.Mouse + Vector(-5,0)
 		end
 
-		if self.INCursor:GetController():IsState(Controller.MOVE_RIGHT) then
+		if actor:GetController():IsState(Controller.MOVE_RIGHT) then
 			self.Mouse = self.Mouse + Vector(5,0)
 		end
 
-		if self.INCursor:GetController():IsState(Controller.MOVE_UP) then
+		if actor:GetController():IsState(Controller.MOVE_UP) then
 			self.Mouse = self.Mouse + Vector(0,-5)
 		end
 
-		if self.INCursor:GetController():IsState(Controller.MOVE_DOWN) then
+		if actor:GetController():IsState(Controller.MOVE_DOWN) then
 			self.Mouse = self.Mouse + Vector(0,5)
 		end
 	end
@@ -86,7 +74,7 @@ end
 function InteractiveMenu.DrawMenuCursor(self, actor, mouse)
 	if self.Mouse == nil then return end
 	mouse.Pos = self.Mouse + Vector(5, 10)
-	PrimitiveMan:DrawBitmapPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), mouse.Pos, mouse, 0, 0)
+	PrimitiveMan:DrawBitmapPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), mouse.Pos, mouse, 0, 0)
 end
 
 function InteractiveMenu.FreezeActor(self, actor)
@@ -192,44 +180,35 @@ function InteractiveMenu.GetChildName(self, table, ChildName)
 end
 
 function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
-
-	if self.INCursor and IsActor(self.INCursor) then
-		self.INCursor = ToActor(self.INCursor)
-
-		if self.INCursor then
-			if self.INCursor:IsPlayerControlled() then
-				if actor.Health <= 0 then -- For some reason this is better than self:Dead()
-					InteractiveMenu.Delete(self, mouse)
-				end
-			else
-				InteractiveMenu.Delete(self, mouse)
-				self.Activity:SwitchToActor(actor, actor.Team, actor.Team)
-			end
+	local playerControlled = actor:IsPlayerControlled()
+	if playerControlled and self.Mouse then
+		if actor.Health <= 0 then -- For some reason this is better than self:Dead()
+			InteractiveMenu.Delete(self, mouse)
 		end
-
+	
 		if self[mouse] then
 			InteractiveMenu.UpdateCursor(self, actor)
 			InteractiveMenu.PersistentMenu(self, actor, self[mouse], table)
 			InteractiveMenu.FreezeActor(self, actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
 		end
-    end
+	else
+		InteractiveMenu.Delete(self, mouse)
+	end
 end
 
 function InteractiveMenu.Destroy(self, mouse)
-    if self.INCursor and not self.INCursor.ToDelete then
-        self.INCursor.ToDelete = true
-        self[mouse].ToDelete = true
-        self.Mouse = nil
-    end
+    if self[mouse] and not self[mouse].ToDelete then
+		self[mouse].ToDelete = true
+		self.Mouse = nil
+	end
 end
 
 function InteractiveMenu.Delete(self, mouse) 
-    if not self.INCursor.ToDelete then
-        self.INCursor.ToDelete = true
-        self[mouse].ToDelete = true
-        self.Mouse = nil
-    end
+    if self[mouse] and not self[mouse].ToDelete then
+		self[mouse].ToDelete = true
+		self.Mouse = nil
+	end
 end
 
 -----------------------------------------------------------------------------------------
@@ -271,7 +250,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 			local topleftPos = InteractiveMenu.ScreenPos(self, cornerX, cornerY)
 			local bottomRightPos = topleftPos + Vector(width - 4.5, height - 4.5)
 			if Parent.Visible then
-				PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Parent.Color)
+				PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), topleftPos, bottomRightPos, Parent.Color)
 			end
 			Frame = Box(topleftPos, width, height )
 		end
@@ -290,7 +269,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 					local topleftPos = InteractiveMenu.ScreenPos(self, cornerX, cornerY)
 					local bottomRightPos = topleftPos + Vector(width - 4.5, height - 4.5)
 					if Child.Visible then
-						PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color)
+						PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), topleftPos, bottomRightPos, Child.Color)
                         Panel = Box(topleftPos, width, height ) --! Reverse this if it causes an issue!
                     else
                         Panel = nil
@@ -315,10 +294,10 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
                                     elseif Anchor == "right" then
                                         ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
                                     end
-                                    PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
+                                    PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
                                 end
                                 if Child.Color2 then
-                                    PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), topleftPos, bottomRightPos, Child.Color2)
+                                    PrimitiveMan:DrawBoxFillPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), topleftPos, bottomRightPos, Child.Color2)
                                 end
                             else
                                 Child.OnHover = false
@@ -332,7 +311,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
                                 Child.CallBack()
                             end
                             if Child.Clicked then
-                                local Clicked = self.INCursor:GetController():IsState(Controller.WEAPON_FIRE)
+                                local Clicked = actor:GetController():IsState(Controller.WEAPON_FIRE)
                                 if (Clicked and Child.OnClick) and not self.ConfirmClick then
                                     Child.OnClick()
                                     self.ConfirmClick = true
@@ -351,7 +330,7 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 							Child.Text = Child.CallBack()
 						end
 						local TexPos = InteractiveMenu.ScreenPos(self, Child.PosX, Child.PosY)
-						PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor:GetController().Player), TexPos, Child.Text, Child.isSmall, 0)
+						PrimitiveMan:DrawTextPrimitive(ActivityMan:GetActivity():ScreenOfPlayer(actor.Team), TexPos, Child.Text, Child.isSmall, 0)
 					end
 				end
 			end
