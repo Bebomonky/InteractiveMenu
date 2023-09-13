@@ -189,7 +189,7 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 		if self[mouse] then
 			InteractiveMenu.UpdateCursor(self, actor)
 			InteractiveMenu.PersistentMenu(self, actor, self[mouse], table)
-			InteractiveMenu.FreezeActor(self, actor)
+			InteractiveMenu.FreezeActor(actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
 		end
 	else
