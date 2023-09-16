@@ -188,12 +188,18 @@ function InteractiveMenu.InitializeTable(self, table)
 						print("Child: " .. Child.Name .. " Pos: " .. tostring(ChildPos) .. " Size: {" .. ChildWidth .. ", " .. ChildHeight .. "}")
 					end
                 end
+				if CLabel then
+					local ChildPos = Vector(Child.BoxPosX, Child.BoxPosY)
+                    local ChildWidth = Child.Width
+                    local ChildHeight = Child.Height
 
-                if CLabel then
+                    local NewPos = ParentPos + ChildPos
+                    InteractiveBox[Child.Name] = Box(NewPos, ChildWidth, ChildHeight)
+
 					if SettingsMan.PrintDebugInfo then
-						print("Child: " .. Child.Name .. " Pos: {" .. Child.PosX .. ", " .. Child.PosY .. "}")
+						print("Child: " .. Child.Name .. " Text Pos: " .. tostring(Vector(Child.TextPosX, Child.TextPosY)) .. " Box Pos: " .. tostring(ChildPos) .. " Box Size: {" .. ChildWidth .. ", " .. ChildHeight .. "}")
 					end
-                end
+				end
             end
         end
     end
@@ -319,8 +325,10 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 						if Child.CallBack then
 							Child.Text = Child.CallBack()
 						end
-						local TexPos = InteractiveMenu.ScreenPos(self, actor, Child.PosX, Child.PosY)
-						PrimitiveMan:DrawTextPrimitive(InteractiveMenu.GetScreen(actor), TexPos, Child.Text, Child.isSmall, 0)
+						local TextPos = Vector(Child.TextPosX, Child.TextPosY)
+						local BoxPos = InteractiveMenu.ScreenPos(self, actor, Panel.Corner.X, Panel.Corner.Y)
+						--PrimitiveMan:DrawBoxFillPrimitive(InteractiveMenu.GetScreen(actor), BoxPos, BoxPos + Vector(Panel.Width - 4.5, Panel.Height - 4.5), 0)
+						PrimitiveMan:DrawTextPrimitive(InteractiveMenu.GetScreen(actor), BoxPos + TextPos, Child.Text, Child.isSmall, 0)
 					end
 				end
 			end
@@ -346,6 +354,10 @@ end
 Name - string
 PosX - number
 PosY - number
+X1 - TextPosX - number
+X2 - TextPosY - number
+Y1 - BoxPosX - number
+Y2 - BoxPosY - number
 Width - number
 Height - number
 PALETTE -- number (Palette Index)
@@ -413,12 +425,16 @@ function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VI
 	}
 end
 
-function InteractiveMenu.Label(N, X, Y, TXT, SMALL, VISIBLE, CALLBACK)
+function InteractiveMenu.Label(N, X1, Y1, X2, Y2, W, H, TXT, SMALL, VISIBLE, CALLBACK)
 	return {
 		ControlType = "LABEL",
 		Name = N,
-		PosX = X,
-		PosY = Y,
+		TextPosX = X1,
+		TextPosY = Y1,
+		BoxPosX = X2,
+		BoxPosY = Y2,
+		Width = W,
+		Height = H,
 		Text = TXT,
 		isSmall = SMALL,
 		Visible = VISIBLE,
