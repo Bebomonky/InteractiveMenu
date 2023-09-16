@@ -142,7 +142,6 @@ function InteractiveMenu.TableChecker(self, table)
 		local MenuErrorMessage2 = "\nNOTICE: Is your table nil? Does it exist?'"
 		error(MenuErrorMessage1 .. MenuErrorMessage2)
 	end
-	return Root, Button, Label
 end
 function InteractiveMenu.InitializeTable(self, table)
     InteractiveBox = {}
