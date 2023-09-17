@@ -134,16 +134,17 @@ end
 -- Table Information
 -----------------------------------------------------------------------------------------
 function InteractiveMenu.TableChecker(self, table)
-	if self[table] then
-		InteractiveMenu.InitializeTable(self, table)
-		if SettingsMan.PrintDebugInfo then
-			local MenuSuccessMessage1 = "Your " .. table .. " Has been Initialized!"
-			print(MenuSuccessMessage1)
-		end
-	else
+	if not self[table] then
 		local MenuErrorMessage1 = "Your" .. " '" .. table .. "' " .. "has failed to be initialized"
 		local MenuErrorMessage2 = "\nNOTICE: Is your table nil? Does it exist?'"
 		error(MenuErrorMessage1 .. MenuErrorMessage2)
+		return 
+	end
+
+	InteractiveMenu.InitializeTable(self, table)
+	if SettingsMan.PrintDebugInfo then
+		local MenuSuccessMessage1 = "Your " .. table .. " Has been Initialized!"
+		print(MenuSuccessMessage1)
 	end
 end
 function InteractiveMenu.InitializeTable(self, table)
@@ -208,11 +209,11 @@ function InteractiveMenu.InitializeTable(self, table)
     end
 end
 function InteractiveMenu.GetBoxName(Name)
-    if InteractiveBox[Name] then
-        return InteractiveBox[Name]
-    else
+    if not InteractiveBox[Name] then
         return error("expected box string &name" .. " '" .. tostring(Name) .. "' (a nil value)")
     end
+
+	return InteractiveBox[Name]
 end
 function InteractiveMenu.GetChildName(self, table, ChildName)
 	for _, Parent in ipairs(self[table]) do
