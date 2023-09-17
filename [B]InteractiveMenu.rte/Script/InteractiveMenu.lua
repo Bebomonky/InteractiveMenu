@@ -176,11 +176,12 @@ function InteractiveMenu.InitializeTable(self, table)
 
                 local Frame = InteractiveBox[Parent.Name]
 
-                local CBox = Child.ControlType == "COLLECTIONBOX"
+                local CCBox = Child.ControlType == "COLLECTIONBOX"
+				local CBox = Child.ControlType == "BOX"
                 local CButton = Child.ControlType == "BUTTON"
                 local CLabel = Child.ControlType == "LABEL"
 
-                if CBox or CButton then
+                if CCBox or CBox or CButton then
                     local ChildPos = Vector(Child.PosX, Child.PosY)
                     local ChildWidth = Child.Width
                     local ChildHeight = Child.Height
@@ -258,12 +259,13 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 			for _, Child in ipairs(Parent.Child) do
 
 				local Panel = InteractiveBox[Child.Name]
-				local CBox = Child.ControlType == "COLLECTIONBOX"
+                local CCBox = Child.ControlType == "COLLECTIONBOX"
+				local CBox = Child.ControlType == "BOX"
 				local CButton = Child.ControlType == "BUTTON"
 				local CLabel = Child.ControlType == "LABEL"
 
 				--If we only need to Draw the Box we do this
-				if CBox or CButton then
+				if CCBox or CBox or CButton then
 					local cornerX, cornerY = Panel.Corner.X, Panel.Corner.Y
 					local width, height = Panel.Width, Panel.Height
 					local topleftPos = InteractiveMenu.ScreenPos(self, actor, cornerX, cornerY)
@@ -274,6 +276,12 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
                     else
                         Panel = nil
                     end
+
+					if CBox then
+						if Child.CallBack then
+							Child.CallBack()
+						end
+					end
 
                     if CButton then
                         if Child.Visible then
@@ -394,9 +402,9 @@ function InteractiveMenu.Root(N, X, Y, W, H, PALETTE, VISIBLE, Table)
 	}
 end
 
-function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE)
+function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE, CALLBACK)
 	return {
-		ControlType = "COLLECTIONBOX",
+		ControlType = "BOX",
 		Name = N,
 		PosX = X,
 		PosY = Y,
@@ -404,6 +412,7 @@ function InteractiveMenu.Box(N, X, Y, W, H, PALETTE, VISIBLE)
 		Height = H,
 		Color = PALETTE,
 		Visible = VISIBLE,
+		CallBack = CALLBACK
 	}
 end
 
