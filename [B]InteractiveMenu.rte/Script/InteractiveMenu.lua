@@ -86,8 +86,11 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 			InteractiveMenu.UpdateCursor(self, actor)
 			InteractiveMenu.PersistentMenu(self, actor, self[mouse], table)
 			InteractiveMenu.FreezeActor(actor)
-			--InteractiveMenu.FreezeCamera(actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
+		end
+	else
+		if self[mouse] and not self[mouse].ToDelete then
+			InteractiveMenu.Delete(self, mouse)
 		end
 	end
 end
