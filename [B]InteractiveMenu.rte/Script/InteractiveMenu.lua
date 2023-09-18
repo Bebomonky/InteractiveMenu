@@ -88,6 +88,7 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 			InteractiveMenu.FreezeActor(actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
 		end
+		return true
 	else
 		if self[mouse] and not self[mouse].ToDelete then
 			InteractiveMenu.Delete(self, mouse)
