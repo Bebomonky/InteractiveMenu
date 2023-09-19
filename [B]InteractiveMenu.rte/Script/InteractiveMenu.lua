@@ -72,9 +72,24 @@ end
 function InteractiveMenu.CreateMenu(self, actor, mouse, PATH, table)
 	InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 
+	self.ReleaseActor = false
+
 	InteractiveMenu.TableChecker(self, table)
 end
 function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
+	if not self.ActorReleaseTimer then
+		self.ActorReleaseTimer = Timer()
+	end
+	if self.ActorReleaseTimer and self.ReleaseActor then
+		if not self.ActorReleaseTimer:IsPastSimMS(100) then
+			InteractiveMenu.FreezeActor(actor)
+		else
+			self.ReleaseActor = false
+		end
+	end
+	if self.ReleaseActor == false then
+		self.ActorReleaseTimer:Reset()
+	end
 	if actor:IsPlayerControlled() then
 		if not self.Mouse then return end
 
@@ -359,6 +374,7 @@ function InteractiveMenu.Delete(self, mouse)
 	if self[mouse] and not self[mouse].ToDelete then
 		self[mouse].ToDelete = true
 		self.Mouse = nil
+		self.ReleaseActor = true
 	end
 end
 --[[
