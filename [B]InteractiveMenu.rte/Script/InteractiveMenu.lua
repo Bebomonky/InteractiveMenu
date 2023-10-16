@@ -72,20 +72,9 @@ end
 function InteractiveMenu.CreateMenu(self, actor, mouse, PATH, table)
 	InteractiveMenu.CreateCursor(self, actor, mouse, PATH)
 
-	self.ReleaseActor = false
-	self.ActorReleaseTimer = Timer()
-
 	InteractiveMenu.TableChecker(self, table)
 end
 function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
-	if self.ActorReleaseTimer and self.ReleaseActor then
-		if self.ActorReleaseTimer:IsPastSimMS(150) then
-			self.ActorReleaseTimer = nil
-			self.ReleaseActor = false
-		else
-			InteractiveMenu.FreezeActor(actor)
-		end
-	end
 	if actor:IsPlayerControlled() then
 		if not self.Mouse then return end
 
@@ -99,7 +88,6 @@ function InteractiveMenu.UpdateMenu(self, actor, mouse, table)
 			InteractiveMenu.FreezeActor(actor)
 			InteractiveMenu.DrawMenuCursor(self, actor, self[mouse])
 		end
-		return true
 	else
 		if self[mouse] and not self[mouse].ToDelete then
 			InteractiveMenu.Delete(self, mouse)
@@ -168,22 +156,22 @@ function InteractiveMenu.InitializeTable(self, table)
 	local Resolution = Vector(FrameMan.PlayerScreenWidth / 1280, FrameMan.PlayerScreenHeight / 720)
 
 	for _, Parent in ipairs(self[table]) do
-		InteractiveBox[Parent.Name] = {}
+	    InteractiveBox[Parent.Name] = {}
 
-		local ParentPos = Vector(Parent.PosX, Parent.PosY)
+	    local ParentPos = Vector(Parent.PosX, Parent.PosY)
 
 		ParentPos.X = ParentPos.X * Resolution.X
 		ParentPos.Y = ParentPos.Y * Resolution.Y
 
-		local ParentWidth = Parent.Width
-		local ParentHeight = Parent.Height
+	    local ParentWidth = Parent.Width
+	    local ParentHeight = Parent.Height
 
-		InteractiveBox[Parent.Name] = Box(ParentPos, ParentWidth, ParentHeight)
+	    InteractiveBox[Parent.Name] = Box(ParentPos, ParentWidth, ParentHeight)
 
 		if SettingsMan.PrintDebugInfo then
 			print("Parent: " .. Parent.Name .. " Pos: " .. tostring(ParentPos) .. " Size: {" .. ParentWidth .. ", " .. ParentHeight .. "}")
 		end
-		if Parent.Child then
+	    if Parent.Child then
 	        for _, Child in ipairs(Parent.Child) do
 
 	            local Frame = InteractiveBox[Parent.Name]
@@ -222,9 +210,9 @@ function InteractiveMenu.InitializeTable(self, table)
 	end
 end
 function InteractiveMenu.GetBoxName(Name)
-	if not InteractiveBox[Name] then
-	    return error("expected box string &name" .. " '" .. tostring(Name) .. "' (a nil value)")
-	end
+    if not InteractiveBox[Name] then
+        return error("expected box string &name" .. " '" .. tostring(Name) .. "' (a nil value)")
+    end
 
 	return InteractiveBox[Name]
 end
@@ -232,11 +220,11 @@ function InteractiveMenu.GetChildName(self, table, ChildName)
 	for _, Parent in ipairs(self[table]) do
 		if Parent.Child then
 			for _, Child in ipairs(Parent.Child) do
-	            if Child.Name == ChildName then
-	                return Child
-	            end
-	        end
-	    end
+				if Child.Name == ChildName then
+				    return Child
+				end
+			end
+		end
 	end
 	return error("expected child string &name" .. " '" .. tostring(ChildName) .. "' (a nil value)")
 end
@@ -271,23 +259,23 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 			for _, Child in ipairs(Parent.Child) do
 
 				local Panel = InteractiveBox[Child.Name]
-	            local CCBox = Child.ControlType == "COLLECTIONBOX"
+                local CCBox = Child.ControlType == "COLLECTIONBOX"
 				local CBox = Child.ControlType == "BOX"
-				local CButton = Child.ControlType == "BUTTON"
-				local CLabel = Child.ControlType == "LABEL"
+                local CButton = Child.ControlType == "BUTTON"
+                local CLabel = Child.ControlType == "LABEL"
 
 				--If we only need to Draw the Box we do this
-				if CCBox or CBox or CButton then
+                if CCBox or CBox or CButton then
 					local cornerX, cornerY = Panel.Corner.X, Panel.Corner.Y
 					local width, height = Panel.Width, Panel.Height
 					local topleftPos = InteractiveMenu.ScreenPos(self, actor, cornerX, cornerY)
 					local bottomRightPos = topleftPos + Vector(width - 4.5, height - 4.5)
 					if Child.Visible then
 						PrimitiveMan:DrawBoxFillPrimitive(InteractiveMenu.GetScreen(actor), topleftPos, bottomRightPos, Child.Color)
-	                    Panel = Box(topleftPos, width, height ) --! Reverse this if it causes an issue!
-	                else
-	                    Panel = nil
-	                end
+                        Panel = Box(topleftPos, width, height ) --! Reverse this if it causes an issue!
+                    else
+                        Panel = nil
+                    end
 
 					if CBox then
 						if Child.CallBack then
@@ -295,52 +283,52 @@ function InteractiveMenu.PersistentMenu(self, actor, mouse, table)
 						end
 					end
 
-	                if CButton then
-	                    if Child.Visible then
-	                        if Panel:IsWithinBox(mouse.Pos - Vector(0,1)) then
-	                            Child.OnHover = true
-	                            if Child.IsClickable then
-	                                Child.Clicked = true
-	                            end
-	                            if Child.ToolTip then
-	                                local ToolTipPos = Vector(0, 0)
-	                                local Anchor = string.lower(Child.AnchorTip)
-	                                if Anchor == "up" then
-	                                    ToolTipPos = Vector(Panel.Width * 0.02, -9)
-	                                elseif Anchor == "down" then
-	                                    ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
-	                                elseif Anchor == "left" then
-	                                    ToolTipPos = Vector(-32, Panel.Height * 0.3)
-	                                elseif Anchor == "right" then
-	                                    ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
-	                                end
-	                                PrimitiveMan:DrawTextPrimitive(InteractiveMenu.GetScreen(actor), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
-	                            end
-	                            if Child.Color2 then
-	                                PrimitiveMan:DrawBoxFillPrimitive(InteractiveMenu.GetScreen(actor), topleftPos, bottomRightPos, Child.Color2)
-	                            end
-	                        else
-	                            Child.OnHover = false
-	                            if Child.IsClickable then
-	                                if Child.Clicked then
-	                                    Child.Clicked = false
-	                                end
-	                            end
-	                        end
-	                        if Child.CallBack then
-	                            Child.CallBack()
-	                        end
-	                        if Child.Clicked then
-	                            local Clicked = actor:GetController():IsState(Controller.WEAPON_FIRE)
-	                            if (Clicked and Child.OnClick) and not self.ConfirmClick then
-	                                Child.OnClick()
-	                                self.ConfirmClick = true
-	                            elseif not Clicked then
-	                                self.ConfirmClick = false
-	                            end
-	                        end
-	                    end
-	                end
+					if CButton then
+					    if Child.Visible then
+					        if Panel:IsWithinBox(mouse.Pos - Vector(0,1)) then
+					            Child.OnHover = true
+					            if Child.IsClickable then
+					                Child.Clicked = true
+					            end
+					            if Child.ToolTip then
+					                local ToolTipPos = Vector(0, 0)
+					                local Anchor = string.lower(Child.AnchorTip)
+					                if Anchor == "up" then
+					                    ToolTipPos = Vector(Panel.Width * 0.02, -9)
+					                elseif Anchor == "down" then
+					                    ToolTipPos = Vector(Panel.Width * 0.02, Panel.Height - 3)
+					                elseif Anchor == "left" then
+					                    ToolTipPos = Vector(-32, Panel.Height * 0.3)
+					                elseif Anchor == "right" then
+					                    ToolTipPos = Vector(Panel.Width - 2, Panel.Height * 0.3)
+					                end
+					                PrimitiveMan:DrawTextPrimitive(InteractiveMenu.GetScreen(actor), Panel.Corner + ToolTipPos, Child.ToolTip, Child.isSmall, 0)
+					            end
+					            if Child.Color2 then
+					                PrimitiveMan:DrawBoxFillPrimitive(InteractiveMenu.GetScreen(actor), topleftPos, bottomRightPos, Child.Color2)
+					            end
+					        else
+					            Child.OnHover = false
+					            if Child.IsClickable then
+					                if Child.Clicked then
+					                    Child.Clicked = false
+					                end
+					            end
+					        end
+					        if Child.CallBack then
+					            Child.CallBack()
+					        end
+					        if Child.Clicked then
+					            local Clicked = actor:GetController():IsState(Controller.WEAPON_FIRE)
+					            if (Clicked and Child.OnClick) and not self.ConfirmClick then
+					                Child.OnClick()
+					                self.ConfirmClick = true
+					            elseif not Clicked then
+					                self.ConfirmClick = false
+					            end
+					        end
+					    end
+					end
 				end
 
 				--If we only need to Draw the Text we do this
@@ -366,11 +354,10 @@ function InteractiveMenu.Destroy(self, mouse)
 	end
 end
 
-function InteractiveMenu.Delete(self, mouse)
+function InteractiveMenu.Delete(self, mouse) 
 	if self[mouse] and not self[mouse].ToDelete then
 		self[mouse].ToDelete = true
 		self.Mouse = nil
-		self.ReleaseActor = true
 	end
 end
 --[[
@@ -438,14 +425,14 @@ function InteractiveMenu.Button(N, X, Y, W, H, PALETTE1, PALETTE2, CLICKABLE, VI
 		Width = W,
 		Height = H,
 		Color = PALETTE1,
-		Color2 = PALETTE2,
+        Color2 = PALETTE2,
 		IsClickable = CLICKABLE,
 		Clicked = false,
 		Visible = VISIBLE,
 		ToolTip = TIP,
 		AnchorTip = DIRECT,
 		isSmall = SMALL,
-		OnHover = HOVER,
+        OnHover = HOVER,
 		OnClick = ONE_TIME_FUNCTION,
 		CallBack = CALLBACK
 	}
