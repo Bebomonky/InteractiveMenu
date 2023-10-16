@@ -118,7 +118,7 @@ function InteractiveMenu.FreezeActor(actor)
 		actor:GetController():SetState(input, false)
 	end
 end
-function InteractiveMenu.Player()
+function InteractiveMenu.GetPlayer()
 	for player = Activity.PLAYER_1, Activity.MAXPLAYERCOUNT - 1 do
 		if ActivityMan:GetActivity():PlayerActive(player) and ActivityMan:GetActivity():PlayerHuman(player) then
 			return player
@@ -126,9 +126,7 @@ function InteractiveMenu.Player()
 	end
 end
 function InteractiveMenu.GetScreen(actor)
-	local ctrl = actor:GetController()
-	local Player = InteractiveMenu.Player()
-	return ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
+	return ActivityMan:GetActivity():ScreenOfPlayer(InteractiveMenu.GetPlayer())
 end
 -----------------------------------------------------------------------------------------
 -- Table Information
