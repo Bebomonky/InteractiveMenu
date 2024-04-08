@@ -41,31 +41,41 @@ function imenu:MessageEntity(entity, message, context, parent)
 
 	if isBlacklisted(entity) then return end
 
-	if not self.DrawPos then
-		self.DrawPos = parent and Vector(parent.Pos.X, parent.Pos.Y) or Vector(entity.Pos.X, entity.Pos.Y)
-	end
+	self:SetDrawPos(parent and Vector(parent.Pos.X, parent.Pos.Y) or Vector(entity.Pos.X, entity.Pos.Y))
 
 	if self.ForceOpen then
-		local playerControlled = parent and parent:IsPlayerControlled() or entity:IsPlayerControlled()
-		if playerControlled then
-			if not self.EntityCurrentlyControlled then
-				self.Open, self.KeepMenuOpen = instance(entity, message, context, self.OneInstance, self.Open, self.KeepMenuOpen)
-				self.EntityCurrentlyControlled = true
-			end
+		if self:ResetInstance(entity, message, context, self.OneInstance) then
 			return
 		end
-		self.EntityCurrentlyControlled = false
-		if self.OneInstance then return end
-		self.Open = false
-		return
 	end
 
 	if not self.Open then
 		messageEntity(entity, message, context)
 	end
 	self.Close = false
-	--We force it to be true regardless just for incase
-	self.Open = not self.Open --Do it after so the entity has time to setup everything (Does that theory work lol?)
+	self:OpenSwitch() --Do it after so the entity has time to setup everything (Does that theory work lol?)
+end
+
+function imenu:SetDrawPos(pos)
+	self.DrawPos = pos
+end
+
+function imenu:ResetInstance(entity, message, context, oneInstance)
+	local playerControlled = parent and parent:IsPlayerControlled() or entity:IsPlayerControlled()
+	if playerControlled then
+		if not self.EntityCurrentlyControlled then
+			self.Open, self.KeepMenuOpen = instance(entity, message, context, oneInstance, self.Open, self.KeepMenuOpen)
+			self.EntityCurrentlyControlled = true
+		end
+		return self.KeepMenuOpen
+	end
+	self.EntityCurrentlyControlled = false
+	if oneInstance then return self.KeepMenuOpen end
+	self.Open = false
+end
+
+function imenu:OpenSwitch()
+	self.Open = not self.Open
 end
 
 --[[---------------------------------------------------------
@@ -110,7 +120,6 @@ function imenu:Remove()
 end
 
 -- PRIVATE FUNCTIONS -----------------------------------------------------------
-
 
 --[[---------------------------------------------------------
 	Name: instance( entity, message, oneInstance, isOpen, stayedOpen )
