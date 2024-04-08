@@ -29,14 +29,14 @@ function imenu:Initialize(entity)
 end
 
 --[[---------------------------------------------------------
-	Name: MessageEntity( entity, message, parent )
+	Name: MessageEntity( entity, message, context, parent )
 	Desc: When the entity wants to send a message, MessageEntity will use that to send a message back.
 		It's best to call this one at a time or use ForceOpen (though the menu will be opened automatically!)
 	Note: You can use this on anything that can retrieve Messages. (unless forcefully blacklisted)
 		If the entity is a device, you would want to use parent so we can check if it's playerControlled for ForceOpen
 -----------------------------------------------------------]]
 
-function imenu:MessageEntity(entity, message, parent)
+function imenu:MessageEntity(entity, message, context, parent)
 	assert(entity, "The entity is nil")
 
 	if isBlacklisted(entity) then return end
@@ -49,7 +49,7 @@ function imenu:MessageEntity(entity, message, parent)
 		local playerControlled = parent and parent:IsPlayerControlled() or entity:IsPlayerControlled()
 		if playerControlled then
 			if not self.EntityCurrentlyControlled then
-				self.Open, self.KeepMenuOpen = instance(entity, message, self.OneInstance, self.Open, self.KeepMenuOpen)
+				self.Open, self.KeepMenuOpen = instance(entity, message, context, self.OneInstance, self.Open, self.KeepMenuOpen)
 				self.EntityCurrentlyControlled = true
 			end
 			return
@@ -61,7 +61,7 @@ function imenu:MessageEntity(entity, message, parent)
 	end
 
 	if not self.Open then
-		entity:SendMessage(message)
+		messageEntity(entity, message, context)
 	end
 	self.Close = false
 	--We force it to be true regardless just for incase
@@ -116,21 +116,29 @@ end
 	Name: instance( entity, message, oneInstance, isOpen, stayedOpen )
 	Desc: For each MessageEntity() call, should the instance stay or should it be recreated everytime?
 -----------------------------------------------------------]]
-function instance(entity, message, oneInstance, isOpen, stayedOpen)
+function instance(entity, message, context, oneInstance, isOpen, stayedOpen)
 	stayedOpen = stayedOpen
 	isOpen = isOpen
 	if oneInstance then
 		if not stayedOpen then
-			entity:SendMessage(message)
+			messageEntity(entity, message, context)
 			isOpen = true
 			stayedOpen = true
 		end
 		return isOpen, stayedOpen
 	end
-	entity:SendMessage(message)
+	messageEntity(entity, message, context)
 	isOpen = true
 
 	return isOpen, stayedOpen
+end
+
+function messageEntity(entity, message, context)
+	if context ~= nil then
+		entity:SendMessage(message, context)
+	else
+		entity:SendMessage(message)
+	end
 end
 
 function cursorData(entity_pos, bitmap)
