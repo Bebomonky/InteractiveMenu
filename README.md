@@ -10,6 +10,9 @@ You can use the GUI Editor to design your Menu (Not tested with 1.0 release)
 https://github.com/cortex-command-community/Cortex-Command-Community-Project-GUI-Editor
 
 # How to include the Framework
+imenu folder belongs in your main CC Directory, while Cursor.rte belongs in your Mods folder
+
+
 at the top of your .lua file be sure to include
 
 ```bash
