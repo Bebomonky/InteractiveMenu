@@ -86,7 +86,7 @@ end
 function shouldDisplay(self, entity)
 	if self.ForceOpen then
 		--Just to be sure, we don't want to cursor to still exist if we don't control it
-		if entity.Health <= 0 or not entity:IsPlayerControlled() then self.Cursor = nil; return false end
+		if entity.Health <= 0 or not entity:IsPlayerControlled() then self.Cursor = nil; end
 		return true
 	end
 	if entity.Health <= 0 or not entity:IsPlayerControlled() then self:Remove() return false end
