@@ -16,8 +16,6 @@ function imenu:Initialize(entity)
 	if act == nil then ConsoleMan:PrintString("A activity is required to be running in order to setup menu!"  .. "Warning! \xD5 ") return end
 	-- Don't change these
 	self.Activity = act
-	self.MaxCursorDist = Vector(FrameMan.PlayerScreenWidth * 0.5 - 6, FrameMan.PlayerScreenHeight * 0.5 - 6)
-	self.HUDHandler = require("Activities/Utility/HUDHandler")
 
 	self.Open = false --If you want your menu to be automatically opened, do it in a update function, check if it's being controlled
 	self.Close = true --It's closed by default
