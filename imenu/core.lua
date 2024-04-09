@@ -53,7 +53,7 @@ function imenu:MessageEntity(entity, message, context, parent)
 		messageEntity(entity, message, context)
 	end
 	self.Close = false
-	self:OpenSwitch() --Do it after so the entity has time to setup everything (Does that theory work lol?)
+	self:SwitchState() --Do it after so the entity has time to setup everything (Does that theory work lol?)
 end
 
 function imenu:SetDrawPos(pos)
