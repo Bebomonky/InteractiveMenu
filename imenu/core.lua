@@ -74,7 +74,7 @@ function imenu:ResetInstance(entity, message, context, oneInstance)
 	self.Open = false
 end
 
-function imenu:OpenSwitch()
+function imenu:SwitchState()
 	self.Open = not self.Open
 	self.Close = not self.Close
 end
