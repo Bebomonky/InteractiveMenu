@@ -282,8 +282,7 @@ function igui.Button()
 		end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
 		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local box = Box(pos, self.Size)
-		local world_pos = Vector(box.Corner.X + box.Width, box.Corner.Y + box.Height) + CameraMan:GetOffset(screen)
+		local world_pos = pos + CameraMan:GetOffset(screen)
 		local text_pos = world_pos
 
 		self.IsHovered = false
