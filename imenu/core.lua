@@ -76,16 +76,33 @@ end
 
 function imenu:OpenSwitch()
 	self.Open = not self.Open
+	self.Close = not self.Close
+end
+
+--[[---------------------------------------------------------
+	Name: shouldDisplay( self, entity )
+	Desc: true or false statements on should the menu be displayed
+-----------------------------------------------------------]]
+function shouldDisplay(self, entity)
+	if self.ForceOpen then
+		--Just to be sure, we don't want to cursor to still exist if we don't control it
+		if entity.Health <= 0 or not entity:IsPlayerControlled() then self.Cursor = nil; return false end
+		return true
+	end
+	if entity.Health <= 0 or not entity:IsPlayerControlled() then self:Remove() return false end
+	if self.Close == true then self:Remove() return false end
+	if self.Open == false then self:Remove() return false end
+
+	return true
 end
 
 --[[---------------------------------------------------------
 	Name: Update( entity )
-	Desc: Draws everything
-	Note: Draw function requires a entity to be passed.
+	Desc: Update function requires a entity to be passed.
 		The reason is due to cursor consistancy (Subject to change)
 -----------------------------------------------------------]]
 function imenu:Update(entity)
-	if shouldDisplay(self, entity) then return end
+	if shouldDisplay(self, entity) == false then return false end
 
 	local ctrl = entity:GetController()
 	local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
@@ -100,7 +117,10 @@ function imenu:Update(entity)
 	--Actor movement disabled, static camera
 	Camera(self.DrawPos, entity)
 
-	--Cursor draws above all
+	return true
+end
+
+function imenu:DrawCursor(screen)
 	PrimitiveMan:DrawBitmapPrimitive(screen, self.Cursor[1].Pos, self.Cursor[1], 0, 0)
 end
 
@@ -198,21 +218,6 @@ function isBlacklisted(entity)
 		return true
 	end
 	return false
-end
-
---[[---------------------------------------------------------
-	Name: shouldDisplay( self, entity )
-	Desc: true or false statements on should the menu be displayed
------------------------------------------------------------]]
-function shouldDisplay(self, entity)
-	if self.ForceOpen then
-		--Just to be sure, we don't want to cursor to still exist if we don't control it
-		if entity.Health <= 0 or not entity:IsPlayerControlled() then self.Cursor = nil; return true end
-		return false
-	end
-	if entity.Health <= 0 or not entity:IsPlayerControlled() then self:Remove() return true end
-	if self.Close then return true end
-	if not self.Open then self:Remove() return true end
 end
 
 --[[---------------------------------------------------------
