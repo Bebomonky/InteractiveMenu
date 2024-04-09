@@ -170,8 +170,6 @@ end
 
 function cursorData(entity_pos, bitmap)
 	local mouse = UInputMan:GetMousePos() --entity_pos
-	local mid = entity_pos
-	local res = Vector(FrameMan.PlayerScreenWidth, FrameMan.PlayerScreenHeight)
 
 	local cursor = CreateMOSParticle(bitmap or "Cursor.rte/imenu Cursor")
 	local cursor_mos = ToMOSprite(cursor)
@@ -179,28 +177,11 @@ function cursorData(entity_pos, bitmap)
 	cursor.Pos = mouse
 	cursor.HitsMOs = false
 	cursor.GetsHitByMOs = false
-	return {cursor, mouse, mid, res}
+	return {cursor, mouse}
 end
 
 function Cursor(screen, cursor, ctrl)
 	cursor[2] = UInputMan:GetMousePos() + CameraMan:GetOffset(screen) + cursor[1].Size / 2
-
-	-- Don't let the cursor leave the screen
-	if cursor[2].X - cursor[3].X < -cursor[4].X then
-		cursor[2].X = cursor[3].X - cursor[4].X
-	end
-
-	if cursor[2].Y - cursor[3].Y < -cursor[4].Y then
-		cursor[2].Y = cursor[3].Y - cursor[4].Y
-	end
-
-	if cursor[2].X - cursor[3].X > cursor[4].X - 10 then
-		cursor[2].X = cursor[3].X + cursor[4].X - 10
-	end
-
-	if cursor[2].Y - cursor[3].Y > cursor[4].Y - 10 then
-		cursor[2].Y = cursor[3].Y + cursor[4].Y - 10
-	end
 
 	cursor[1].Pos = cursor[2]
 end
