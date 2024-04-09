@@ -53,7 +53,7 @@ function imenu:MessageEntity(entity, message, context, parent)
 		messageEntity(entity, message, context)
 	end
 	self.Close = false
-	self:SwitchState() --Do it after so the entity has time to setup everything (Does that theory work lol?)
+	self.Open = not self.Open --Do it after so the entity has time to setup everything (Does that theory work lol?)
 end
 
 function imenu:SetDrawPos(pos)
@@ -102,7 +102,7 @@ end
 		The reason is due to cursor consistancy (Subject to change)
 -----------------------------------------------------------]]
 function imenu:Update(entity)
-	if shouldDisplay(self, entity) == false then return false end
+	if not shouldDisplay(self, entity) then return false end
 
 	local ctrl = entity:GetController()
 	local screen = ActivityMan:GetActivity():ScreenOfPlayer(ctrl.Player)
@@ -134,8 +134,8 @@ function imenu:Remove()
 		self.Cursor = nil
 		return
 	end
-	self.Close = true
 	self.Open = false
+	self.Close = true
 	self.Cursor = nil
 end
 
