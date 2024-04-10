@@ -11,120 +11,6 @@ TODO Tooltip shown on mouse position
 
 -- PUBLIC FUNCTIONS ------------------------------------------------------------
 
-function igui.ProgressBar()
-	local pbar = {}
-
-	--String
-	util.AccessorFunc(pbar, "Name", "Name", 1)
-	util.AccessorFunc(pbar, "Text", "Text", 1)
-	util.AccessorFunc(pbar, "Tooltip", "Tooltip", 1)
-
-	--Number
-	util.AccessorFunc(pbar, "FGColor", "FGColor", 2)
-	util.AccessorFunc(pbar, "BGColor", "BGColor", 2)
-	util.AccessorFunc(pbar, "OutlineColor", "OutlineColor", 2)
-	util.AccessorFunc(pbar, "MaxHeight", "MaxHeight", 2)
-	util.AccessorFunc(pbar, "Fraction", "Fraction", 2)
-	util.AccessorFunc(pbar, "OutlineThickness", "OutlineThickness", 2)
-
-	--Bool
-	util.AccessorFunc(pbar, "Visible", "Visible", 3)
-	util.AccessorFunc(pbar, "SmallText", "SmallText", 3)
-	util.AccessorFunc(pbar, "DrawAfterParent", "DrawAfterParent", 3)
-
-	--Vector
-	util.AccessorFunc(pbar, "Pos", "Pos", 4)
-	util.AccessorFunc(pbar, "Size", "Size", 4)
-
-	pbar.ControlType = "PROGRESSBAR"
-	pbar.Name = pbar.Name or "ProgressBar"
-	pbar.Text = ""
-	pbar.Tooltip = ""
-	pbar.FGColor = 209
-	pbar.BGColor = 190
-	pbar.OutlineColor = 0
-	pbar.MaxHeight = 10
-	pbar.OutlineThickness = 2
-	pbar.Visible = true
-	pbar.SmallText = true
-	pbar.DrawAfterParent = true
-	pbar.Pos = Vector()
-	pbar.Size = Vector(100, 10)
-
-	local min = 0
-	local max = 1
-	local completed = false
-
-	pbar.OnComplete = nil
-	pbar.Think = nil
-	pbar.OnProgress = nil
-
-	pbar.SetParent = function(self, parent)
-		self.Parent = parent
-		for i, child in pairs(parent.Child) do
-			if child.Name == self.Name then
-				parent.Child[i] = nil
-			end
-		end
-		table.insert(parent.Child, self)
-	end
-
-	pbar.GetParent = function(self)
-		return self.Parent
-	end
-
-	pbar.GetCompleted = function(self)
-		return completed
-	end
-
-	pbar.SetFraction = function(self, value)
-		min = value
-	end
-
-	pbar.GetFraction = function(self)
-		return min
-	end
-
-	pbar.Update = function(self, entity)
-		if not self.Visible then return end
-		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
-		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local world_pos = pos + CameraMan:GetOffset(screen)
-		local text_pos = world_pos
-		local factor = math.min(min, max)
-		local bottomRightPos = world_pos + self.Size + Vector(0, 0.5)
-		local bottomRightPos2 = world_pos + Vector(self.Size.X * factor, self.Size.Y)
-		local thickness = self.OutlineThickness
-		if entity:IsPlayerControlled() then
-			if thickness ~= 0 then
-				PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos - Vector(thickness, thickness), bottomRightPos + Vector(thickness, thickness), self.OutlineColor)
-			end
-			PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos, bottomRightPos, self.BGColor)
-			if min ~= 0 then
-				PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos, bottomRightPos2, self.FGColor)
-			end
-			PrimitiveMan:DrawTextPrimitive(screen, text_pos, self.Text, self.SmallText, 0)
-		end
-		if not completed then
-			if min >= max then
-				completed = true
-				if (self.OnComplete) then
-					self.OnComplete(entity)
-					min = 0
-					completed = false
-				end
-			end
-		end
-		if entity:IsPlayerControlled() and self.Think then
-			self.Think(entity, screen)
-		end
-		if self.OnProgress then
-			self.OnProgress(entity, screen)
-		end
-	end
-
-	return pbar
-end
 function igui.CollectionBox()
 	local cbox = {}
 	cbox.Child = {}
@@ -149,8 +35,8 @@ function igui.CollectionBox()
 	cbox.ControlType = "COLLECTIONBOX"
 	cbox.Name = cbox.Name or "CollectionBox"
 	cbox.Title = "Title Text"
-	cbox.Color = 209
-	cbox.OutlineColor = 0
+	cbox.Color = 146
+	cbox.OutlineColor = 71
 	cbox.OutlineThickness = 0
 	cbox.Visible = true
 	cbox.SmallText = true
@@ -243,8 +129,8 @@ function igui.Button()
 	button.Text = ""
 	button.Tooltip = ""
 	button.TextAlignment = 1
-	button.Color = 209
-	button.OutlineColor = 0
+	button.Color = 146
+	button.OutlineColor = 71
 	button.OutlineThickness = 0
 	button.Visible = true
 	button.Clickable = true
@@ -337,26 +223,119 @@ function igui.Button()
 	return button
 end
 
---[[---------------------------------------------------------
-	Name: RemoveChild(parent_child, child_name )
-	Desc: Look for children that doesn't have this name and remove it
------------------------------------------------------------]]
-function igui.RemoveChild(parent_child, child_name)
-	if type(child_name) == "string" then
-		for i, child in pairs(parent_child) do
-			if child.Name == child_name then
-				parent_child[i] = nil
+function igui.ProgressBar()
+	local pbar = {}
+
+	--String
+	util.AccessorFunc(pbar, "Name", "Name", 1)
+	util.AccessorFunc(pbar, "Text", "Text", 1)
+	util.AccessorFunc(pbar, "Tooltip", "Tooltip", 1)
+
+	--Number
+	util.AccessorFunc(pbar, "FGColor", "FGColor", 2)
+	util.AccessorFunc(pbar, "BGColor", "BGColor", 2)
+	util.AccessorFunc(pbar, "OutlineColor", "OutlineColor", 2)
+	util.AccessorFunc(pbar, "MaxHeight", "MaxHeight", 2)
+	util.AccessorFunc(pbar, "Fraction", "Fraction", 2)
+	util.AccessorFunc(pbar, "OutlineThickness", "OutlineThickness", 2)
+
+	--Bool
+	util.AccessorFunc(pbar, "Visible", "Visible", 3)
+	util.AccessorFunc(pbar, "SmallText", "SmallText", 3)
+	util.AccessorFunc(pbar, "DrawAfterParent", "DrawAfterParent", 3)
+
+	--Vector
+	util.AccessorFunc(pbar, "Pos", "Pos", 4)
+	util.AccessorFunc(pbar, "Size", "Size", 4)
+
+	pbar.ControlType = "PROGRESSBAR"
+	pbar.Name = pbar.Name or "ProgressBar"
+	pbar.Text = ""
+	pbar.Tooltip = ""
+	pbar.FGColor = 117
+	pbar.BGColor = 146
+	pbar.OutlineColor = 144
+	pbar.MaxHeight = 10
+	pbar.OutlineThickness = 2
+	pbar.Visible = true
+	pbar.SmallText = true
+	pbar.DrawAfterParent = true
+	pbar.Pos = Vector()
+	pbar.Size = Vector(100, 10)
+
+	local min = 0
+	local max = 1
+	local completed = false
+
+	pbar.OnComplete = nil
+	pbar.Think = nil
+	pbar.OnProgress = nil
+
+	pbar.SetParent = function(self, parent)
+		self.Parent = parent
+		for i, child in pairs(parent.Child) do
+			if child.Name == self.Name then
+				parent.Child[i] = nil
 			end
 		end
-		return
+		table.insert(parent.Child, self)
 	end
-	for i, child in pairs(parent_child) do
-		for j, name in pairs(child_name) do
-			if child.Name == name then
-				parent_child[i] = nil
+
+	pbar.GetParent = function(self)
+		return self.Parent
+	end
+
+	pbar.GetCompleted = function(self)
+		return completed
+	end
+
+	pbar.SetFraction = function(self, value)
+		min = value
+	end
+
+	pbar.GetFraction = function(self)
+		return min
+	end
+
+	pbar.Update = function(self, entity)
+		if not self.Visible then return end
+		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
+		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
+		local world_pos = pos + CameraMan:GetOffset(screen)
+		local text_pos = world_pos
+		local factor = math.min(min, max)
+		local bottomRightPos = world_pos + self.Size + Vector(0, 0.5)
+		local bottomRightPos2 = world_pos + Vector(self.Size.X * factor, self.Size.Y)
+		local thickness = self.OutlineThickness
+		if entity:IsPlayerControlled() then
+			if thickness ~= 0 then
+				PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos - Vector(thickness, thickness), bottomRightPos + Vector(thickness, thickness), self.OutlineColor)
+			end
+			PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos, bottomRightPos, self.BGColor)
+			if min ~= 0 then
+				PrimitiveMan:DrawBoxFillPrimitive(screen, world_pos, bottomRightPos2, self.FGColor)
+			end
+			PrimitiveMan:DrawTextPrimitive(screen, text_pos, self.Text, self.SmallText, 0)
+		end
+		if not completed then
+			if min >= max then
+				completed = true
+				if (self.OnComplete) then
+					self.OnComplete(entity)
+					min = 0
+					completed = false
+				end
 			end
 		end
+		if entity:IsPlayerControlled() and self.Think then
+			self.Think(entity, screen)
+		end
+		if self.OnProgress then
+			self.OnProgress(entity, screen)
+		end
 	end
+
+	return pbar
 end
 
 function igui.Label()
@@ -411,6 +390,28 @@ function igui.Label()
 		end
 	end
 	return label
+end
+
+--[[---------------------------------------------------------
+	Name: RemoveChild(parent_child, child_name )
+	Desc: Look for children that doesn't have this name and remove it
+-----------------------------------------------------------]]
+function igui.RemoveChild(parent_child, child_name)
+	if type(child_name) == "string" then
+		for i, child in pairs(parent_child) do
+			if child.Name == child_name then
+				parent_child[i] = nil
+			end
+		end
+		return
+	end
+	for i, child in pairs(parent_child) do
+		for j, name in pairs(child_name) do
+			if child.Name == name then
+				parent_child[i] = nil
+			end
+		end
+	end
 end
 
 -- PRIVATE FUNCTIONS -----------------------------------------------------------
