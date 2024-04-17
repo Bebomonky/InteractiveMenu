@@ -71,7 +71,7 @@ function igui.CollectionBox()
 		end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
 		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local world_pos = pos + CameraMan:GetOffset(screen)
+		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 		local thickness = self.OutlineThickness
 		if entity:IsPlayerControlled() then
@@ -168,7 +168,7 @@ function igui.Button()
 		end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
 		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local world_pos = pos + CameraMan:GetOffset(screen)
+		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 
 		self.IsHovered = false
@@ -301,7 +301,7 @@ function igui.ProgressBar()
 		if not self.Visible then return end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
 		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local world_pos = pos + CameraMan:GetOffset(screen)
+		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 		local factor = math.min(min, max)
 		local bottomRightPos = world_pos + self.Size + Vector(0, 0.5)
@@ -381,7 +381,7 @@ function igui.Label()
 		if not self.Visible then return end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
 		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
-		local world_pos = pos + CameraMan:GetOffset(screen)
+		local world_pos = CameraMan:GetOffset(screen) + pos
 		if entity:IsPlayerControlled() then
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos, self.Text, self.SmallText, 0)
 			if (self.Think) then
@@ -423,11 +423,11 @@ function cursor_inside(el_pos, size)
 	local el_width = size.X
 	local el_height = size.Y
 
-	local mouse_pos = UInputMan:GetMousePos()
+	local mouse_pos = UInputMan:GetMousePos() / FrameMan.ResolutionMultiplier
 	local mouse_x = mouse_pos.X
 	local mouse_y = mouse_pos.Y
 
-	return (mouse_x > el_x) and (mouse_x < el_x + el_width) and (mouse_y > el_y) and (mouse_y < el_y + el_height)
+	return (mouse_x >= el_x) and (mouse_x < el_x + el_width) and (mouse_y >= el_y) and (mouse_y < el_y + el_height)
 end
 
 -- MODULE END ------------------------------------------------------------------

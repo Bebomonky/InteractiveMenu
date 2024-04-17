@@ -119,7 +119,7 @@ function imenu:Update(entity)
 end
 
 function imenu:DrawCursor(screen)
-	PrimitiveMan:DrawBitmapPrimitive(screen, self.Cursor[1].Pos, self.Cursor[1], 0, 0)
+	PrimitiveMan:DrawBitmapPrimitive(screen, self.Cursor[1].Pos + Vector(5, 5), self.Cursor[1], 0, 0)
 end
 
 --[[---------------------------------------------------------
@@ -169,11 +169,9 @@ function messageEntity(entity, message, context)
 end
 
 function cursorData(entity_pos, bitmap)
-	local mouse = UInputMan:GetMousePos() --entity_pos
+	local mouse = UInputMan:GetMousePos() / FrameMan.ResolutionMultiplier--entity_pos
 
 	local cursor = CreateMOSParticle(bitmap or "Cursor.rte/imenu Cursor")
-	local cursor_mos = ToMOSprite(cursor)
-	cursor.Size = Vector(cursor_mos:GetSpriteWidth(), cursor_mos:GetSpriteHeight())
 	cursor.Pos = mouse
 	cursor.HitsMOs = false
 	cursor.GetsHitByMOs = false
@@ -181,7 +179,9 @@ function cursorData(entity_pos, bitmap)
 end
 
 function Cursor(screen, cursor, ctrl)
-	cursor[2] = UInputMan:GetMousePos() + CameraMan:GetOffset(screen) + cursor[1].Size / 2
+	local screen_offset = CameraMan:GetOffset(screen)
+	local mouse_pos = UInputMan:GetMousePos() / FrameMan.ResolutionMultiplier
+	cursor[2] = screen_offset + mouse_pos
 
 	cursor[1].Pos = cursor[2]
 end
