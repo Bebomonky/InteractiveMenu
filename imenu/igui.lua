@@ -70,7 +70,7 @@ function igui.CollectionBox()
 			end
 		end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
-		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
+		local pos = ((self.Parent and self.Parent.Pos + self.Pos) or self.Pos) / FrameMan.ResolutionMultiplier
 		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 		local thickness = self.OutlineThickness
@@ -167,7 +167,7 @@ function igui.Button()
 			end
 		end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
-		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
+		local pos = ((self.Parent and self.Parent.Pos + self.Pos) or self.Pos) / FrameMan.ResolutionMultiplier
 		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 
@@ -300,7 +300,7 @@ function igui.ProgressBar()
 	pbar.Update = function(self, entity)
 		if not self.Visible then return end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
-		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
+		local pos = ((self.Parent and self.Parent.Pos + self.Pos) or self.Pos) / FrameMan.ResolutionMultiplier
 		local world_pos = CameraMan:GetOffset(screen) + pos
 		local text_pos = world_pos
 		local factor = math.min(min, max)
@@ -380,7 +380,7 @@ function igui.Label()
 	label.Update = function(self, entity)
 		if not self.Visible then return end
 		local screen = ActivityMan:GetActivity():ScreenOfPlayer(entity:GetController().Player)
-		local pos = (self.Parent and self.Parent.Pos + self.Pos) or self.Pos
+		local pos = ((self.Parent and self.Parent.Pos + self.Pos) or self.Pos) / FrameMan.ResolutionMultiplier
 		local world_pos = CameraMan:GetOffset(screen) + pos
 		if entity:IsPlayerControlled() then
 			PrimitiveMan:DrawTextPrimitive(screen, world_pos, self.Text, self.SmallText, 0)
